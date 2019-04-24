@@ -1,7 +1,6 @@
 
-
 local GrenadeCast = {};
-local Resources = require(game.ReplicatedStorage.Resources)
+local Resources = require(game:GetService("ReplicatedStorage"):WaitForChild("Resources"))
 local Signal = Resources:LoadLibrary("Signal")
 local RunService = game:GetService("RunService")
 local  Typer = Resources:LoadLibrary("Typer")
@@ -123,25 +122,25 @@ function GrenadeCast.new(nade)
 	function nadeC:Fire(Origin, Direction, Velocity, CosmeticNade, Duration, Mode, Rot)
 			assert(nadeC == self, "Expected ':' not '.' calling member function Fire")
 			fastSpawn(function ()
-					MainTrajectoryFire(Origin,Direction,Velocity,Cast,Duration,CosmeticNade,Mode,{},Rot)
+				MainTrajectoryFire(Origin,Direction,Velocity,Cast,Duration,CosmeticNade,Mode,{},Rot)
 			end)
 	end
 		
-		function nadeC:FireWithWhitelist(Origin, Direction, Velocity, Whitelist, CosmeticNade, Duration, Mode, Rot)
-			assert(nadeC == self, "Expected ':' not '.' calling member function Fire")
-				fastSpawn(function ()
-						MainTrajectoryFire(Origin,Direction,Velocity,CastWhitelist,Duration,CosmeticNade,Mode,Whitelist,Rot)
-				end)
-		end
-		
-		function nadeC:FireWithBlacklist(Origin, Direction, Velocity, Blacklist, CosmeticNade, Duration, Mode, Rot)
+	function nadeC:FireWithWhitelist(Origin, Direction, Velocity, Whitelist, CosmeticNade, Duration, Mode, Rot)
 			assert(nadeC == self, "Expected ':' not '.' calling member function Fire")
 			fastSpawn(function ()
-					MainTrajectoryFire(Origin,Direction,Velocity,CastBlacklist,Duration,CosmeticNade,Mode,Blacklist,Rot)
+				MainTrajectoryFire(Origin,Direction,Velocity,CastWhitelist,Duration,CosmeticNade,Mode,Whitelist,Rot)
 			end)
-		end
+	end
+		
+	function nadeC:FireWithBlacklist(Origin, Direction, Velocity, Blacklist, CosmeticNade, Duration, Mode, Rot)
+			assert(nadeC == self, "Expected ':' not '.' calling member function Fire")
+			fastSpawn(function ()
+				MainTrajectoryFire(Origin,Direction,Velocity,CastBlacklist,Duration,CosmeticNade,Mode,Blacklist,Rot)
+			end)
+	end
 			
-		nadeCM.__index = function (Table, Index)
+	nadeCM.__index = function (Table, Index)
 		if Table == nadeC then
 			if Index == "IgnoreDescendantsInstance" then
 				return IgnoreDescendantsInstance
@@ -151,30 +150,30 @@ function GrenadeCast.new(nade)
 				return TrajectoryLengthChanged
 			end
 		end
-		end
+	end
 	
-		local IgnoreMode = false 
-		nadeCM.__newindex = function (Table, Index, Value)
-			if IgnoreMode then return end
-			if Table == nadeC then
-				if Index == "IgnoreDescendantsInstance" then
-					assert(Value == nil or typeof(Value) == "Instance", "Bad argument \"" .. Index .. "\" (Instance expected, got " .. typeof(Value) .. ")")
-					IgnoreDescendantsInstance = Value
-				elseif Index == "RayHit" or Index == "LengthChanged"  then
-					error("Can't set value", 0)
-				end
+	local IgnoreMode = false 
+	nadeCM.__newindex = function (Table, Index, Value)
+		if IgnoreMode then return end
+		if Table == nadeC then
+			if Index == "IgnoreDescendantsInstance" then
+				assert(Value == nil or typeof(Value) == "Instance", "Bad argument \"" .. Index .. "\" (Instance expected, got " .. typeof(Value) .. ")")
+				IgnoreDescendantsInstance = Value
+			elseif Index == "RayHit" or Index == "LengthChanged"  then
+				error("Can't set value", 0)
 			end
 		end
+	end
 
-		IgnoreMode = true
-		nadeC.RayHit = RayHit
-		nadeC.LengthChanged = TrajectoryLengthChanged
-		nadeC.IgnoreDescendantsInstance = IgnoreDescendantsInstance
-		IgnoreMode = false
+	IgnoreMode = true
+	nadeC.RayHit = RayHit
+	nadeC.LengthChanged = TrajectoryLengthChanged
+	nadeC.IgnoreDescendantsInstance = IgnoreDescendantsInstance
+	IgnoreMode = false
 		
-		nadeCM.__metatable = "FastCaster"
+	nadeCM.__metatable = "FastCaster"
 		
-		return nadeC
+	return nadeC
 end
 		
 		
